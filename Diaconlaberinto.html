@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Juego de Laberinto - San Valentín</title>
+    <style>
+        body {
+            background: url('https://i.pinimg.com/736x/05/dd/24/05dd249bef2826a364e6ca1979719d22.jpg') no-repeat center center fixed;
+            background-size: cover;
+            text-align: center;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        canvas {
+            border: 3px solid #ff4d6d;
+            display: block;
+            margin: auto;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        #mensaje, #corazones, #pregunta {
+            display: none;
+            font-size: 24px;
+            font-weight: bold;
+            color: red;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
+            display: inline-block;
+            margin-top: 50px;
+            border: 3px solid #ff4d6d;
+            animation: aparecer 1s ease-in-out;
+        }
+        button {
+            background-color: #ff4d6d;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 22px;
+            cursor: pointer;
+            border-radius: 10px;
+            margin: 10px;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #ff1a4d;
+            transform: scale(1.1);
+        }
+        @keyframes aparecer {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+      <body>
+    <!-- Solo video de TikTok con iframe -->
+    <iframe src="https://www.tiktok.com/embed/7466549909278182662" width="325" height="605" frameborder="0" allowfullscreen></iframe>
+      </body>
+
+    <!-- Botón para iniciar la música -->
+    <button id="playAudioBtn" onclick="iniciarAudio()">Reproducir música 💖</button>
+    <audio id="audio" style="display: none;">
+        <source src="MI DECLARACION.mp3" type="audio/mp3">
+        Tu navegador no soporta el formato de audio.
+    </audio>
+
+    <h1>Juego de Laberinto - San Valentín 💖</h1>
+    <canvas id="laberinto" width="400" height="400"></canvas>
+    <div id="mensaje">¡Llegaste al final! 💘</div>
+    <div id="corazones">💖💖💖</div>
+
+    <div id="pregunta" class="container">
+        <p class="mensaje">¿Quieres ser mi San Valentín? 🥰</p>
+        <button onclick="aceptar()">¡Sí, claro! 💘</button>
+        <button id="noBtn" onclick="cambiarTexto()">No... 🙈</button>
+    </div>
+
+    <script>
+        let canvas = document.getElementById("laberinto");
+        let ctx = canvas.getContext("2d");
+        let tamaño = 40;
+        let jugador = { x: 0, y: 0 };
+        let meta = { x: 9, y: 9 };
+
+        let laberinto = [
+            [0, 1, 0, 0, 0, 0, 1, 0, 0, 0],
+            [0, 1, 0, 1, 1, 0, 1, 1, 1, 0],
+            [0, 0, 0, 1, 0, 0, 0, 0, 1, 0],
+            [1, 1, 1, 1, 0, 1, 1, 0, 1, 0],
+            [0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+            [0, 1, 0, 1, 1, 0, 1, 1, 1, 0],
+            [0, 1, 0, 0, 0, 0, 0, 0, 1, 0],
+            [0, 1, 1, 1, 1, 1, 1, 0, 1, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+            [1, 1, 1, 1, 1, 1, 1, 0, 0, 0]
+        ];
+
+        function dibujarLaberinto() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < 10; i++) {
+                for (let j = 0; j < 10; j++) {
+                    if (laberinto[i][j] === 1) {
+                        ctx.fillStyle = "black";
+                        ctx.fillRect(j * tamaño, i * tamaño, tamaño, tamaño);
+                    }
+                }
+            }
+            ctx.fillStyle = "blue";
+            ctx.fillRect(jugador.x * tamaño, jugador.y * tamaño, tamaño, tamaño);
+            ctx.fillStyle = "red";
+            ctx.fillRect(meta.x * tamaño, meta.y * tamaño, tamaño, tamaño);
+        }
+
+        function moverJugador(e) {
+            let nuevaX = jugador.x;
+            let nuevaY = jugador.y;
+            if (e.key === "ArrowUp" && jugador.y > 0) nuevaY--;
+            if (e.key === "ArrowDown" && jugador.y < 9) nuevaY++;
+            if (e.key === "ArrowLeft" && jugador.x > 0) nuevaX--;
+            if (e.key === "ArrowRight" && jugador.x < 9) nuevaX++;
+
+            if (laberinto[nuevaY][nuevaX] === 0) {
+                jugador.x = nuevaX;
+                jugador.y = nuevaY;
+            }
+
+            dibujarLaberinto();
+
+            if (jugador.x === meta.x && jugador.y === meta.y) {
+                document.getElementById("mensaje").style.display = "block";
+                document.getElementById("corazones").style.display = "block";
+                document.getElementById("pregunta").style.display = "block";
+            }
+        }
+
+        let respuestas = [
+            "No... 🙈",
+            "Déjame pensarlo... 🤔",
+            "Mmm... No sé... 😳",
+            "Tal vez... 🫣",
+            "Está bien... 💕",
+            "Sí, quiero 💘"
+        ];
+        let index = 0;
+
+        function cambiarTexto() {
+            let btnNo = document.getElementById("noBtn");
+            if (index < respuestas.length - 1) {
+                btnNo.innerText = respuestas[index];
+                index++;
+            } else {
+                btnNo.style.display = "none";
+            }
+        }
+
+        function aceptar() {
+            document.body.innerHTML = `
+                <style>
+                    body {
+                        background: black;
+                        color: white;
+                        text-align: center;
+                        overflow: hidden;
+                        transition: background 1s ease-in-out;
+                    }
+                    h1 {
+                        font-size: 50px;
+                        margin-top: 50px;
+                    }
+                    p {
+                        font-size: 24px;
+                        margin-top: 20px;
+                    }
+                    .mensaje {
+                        padding: 20px;
+                        background: rgba(255, 255, 255, 0.1);
+                        border-radius: 15px;
+                        font-size: 22px;
+                        font-weight: bold;
+                        width: 60%;
+                        margin: 20px auto;
+                        text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.5);
+                    }
+                </style>
+
+                <h1>¡Sabía que dirías que sí! 💖✨</h1>
+                <p>🌹 Te dedico esto con mucho cariño 🌹</p>
+                <div class="mensaje">
+                    💌 Desde que te vi, supe que había algo especial en ti.  
+                    Eres increíble, y espero que este San Valentín sea solo el comienzo  
+                    de muchos momentos lindos juntos. 💕
+                </div>
+            `;
+        }
+
+        // Función para reproducir el audio cuando el usuario haga clic en el botón
+        function iniciarAudio() {
+            let audio = document.getElementById("audio");
+            audio.play();
+            document.getElementById("playAudioBtn").style.display = "none"; // Ocultar el botón una vez que se haya reproducido el audio
+        }
+
+        window.addEventListener("keydown", moverJugador);
+        dibujarLaberinto();
+    </script>
+</body>
+</html>
